@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/julian-klode/goledger"
@@ -122,12 +123,16 @@ func HBCIParseFile(path string) ([]Transaction, error) {
 		(&t.valueValue).UnmarshalJSON([]byte(record[columns["value_value"]]))
 		t.valueCurrency = record[columns["value_currency"]]
 		t.remoteName = append(t.remoteName, record[columns["remoteName"]])
-		for i := 1; columns["remoteName"+string(i)] != 0; i++ {
-			t.remoteName = append(t.remoteName, record[columns["remoteName"+string(i)]])
+		for i := 1; columns["remoteName"+strconv.Itoa(i)] != 0; i++ {
+			if record[columns["remoteName"+strconv.Itoa(i)]] != "" {
+				t.remoteName = append(t.remoteName, record[columns["remoteName"+strconv.Itoa(i)]])
+			}
 		}
 		t.purposes = append(t.purposes, record[columns["purpose"]])
-		for i := 1; columns["purpose"+string(i)] != 0; i++ {
-			t.purposes = append(t.purposes, record[columns["purpose"+string(i)]])
+		for i := 1; columns["purpose"+strconv.Itoa(i)] != 0; i++ {
+			if record[columns["purpose"+strconv.Itoa(i)]] != "" {
+				t.purposes = append(t.purposes, record[columns["purpose"+strconv.Itoa(i)]])
+			}
 		}
 
 		t.date, err = time.Parse("2006/01/02", record[columns["date"]])
