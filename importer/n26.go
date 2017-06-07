@@ -67,6 +67,10 @@ type n26Transaction struct {
 
 type n26Transaction2 struct{ d *n26Transaction }
 
+func (t n26Transaction2) ID() string {
+	return t.d.ID
+}
+
 // LocalAccount returns an ID of the local account.
 func (t n26Transaction2) LocalAccount() string {
 	return t.d.AccountID

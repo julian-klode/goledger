@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package importer
 
 import (
+	"crypto/sha1"
+	"fmt"
 	"time"
 
 	"github.com/julian-klode/goledger"
@@ -24,6 +26,11 @@ import (
 
 // Transaction describes a generic incoming transaction.
 type Transaction interface {
+	// An identifier describing the description, to filter out duplicates.
+	//
+	// If the bank does not provide identifiers, use hashTransaction() when
+	// implementing a new transaction parser.
+	ID() string
 	// Time when the transaction occured. For the difference between date
 	// and valuta date search the internet, I can't explain it.
 	Date() time.Time
@@ -57,4 +64,40 @@ type Transaction interface {
 	// The LBB provider understands a code 'A' which means Amazon credits.
 	Amount() goledger.Decimal
 	Currency() string
+}
+
+// hashTransaction is a base implementation for Transaction.ID().
+// It just hashes all values using SHA1.
+func hashTransaction(t Transaction) string {
+	hash := sha1.New()
+	_, err := hash.Write([]byte(t.Date().String()))
+	if err != nil {
+		panic(err)
+	}
+	_, err = hash.Write([]byte(t.ValutaDate().String()))
+	if err != nil {
+		panic(err)
+	}
+	_, err = hash.Write([]byte(t.LocalAccount()))
+	if err != nil {
+		panic(err)
+	}
+	_, err = hash.Write([]byte(t.RemoteName()))
+	if err != nil {
+		panic(err)
+	}
+	_, err = hash.Write([]byte(t.RemoteAccount()))
+	if err != nil {
+		panic(err)
+	}
+	_, err = hash.Write([]byte(t.ReferenceText()))
+	if err != nil {
+		panic(err)
+	}
+	_, err = hash.Write([]byte(string(t.Amount())))
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf("%x", hash.Sum(nil))
 }

@@ -22,6 +22,10 @@ type hbciTransaction struct {
 	valutaDate          time.Time
 }
 
+func (t hbciTransaction) ID() string {
+	return hashTransaction(t)
+}
+
 // LocalAccount returns an ID of the local account.
 func (t hbciTransaction) LocalAccount() string {
 	return t.localAccountNumber

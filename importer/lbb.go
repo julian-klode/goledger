@@ -41,6 +41,10 @@ type lbbTransaction struct {
 	currency       string
 }
 
+func (t lbbTransaction) ID() string {
+	return hashTransaction(t)
+}
+
 // LocalAccount returns an ID of the local account.
 func (t lbbTransaction) LocalAccount() string {
 	return t.CardNumber
