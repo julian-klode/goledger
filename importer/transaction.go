@@ -66,6 +66,15 @@ type Transaction interface {
 	Currency() string
 }
 
+// MultilineTransaction is a transaction where names and purposes can have
+// multiple lines.
+type MultilineTransaction interface {
+	Transaction
+
+	RemoteNames() []string
+	Purposes() []string
+}
+
 // hashTransaction is a base implementation for Transaction.ID().
 // It just hashes all values using SHA1.
 func hashTransaction(t Transaction) string {
