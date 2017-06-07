@@ -39,12 +39,20 @@ func (t hbciTransaction) RemoteAccount() string {
 
 // RemoteName returns a name of the other account.
 func (t hbciTransaction) RemoteName() string {
-	return fmt.Sprintf("%v", t.remoteName)
+	result := ""
+	for _, s := range t.remoteName {
+		result += s
+	}
+	return result
 }
 
 // ReferenceText returns a description of the transaction.
 func (t hbciTransaction) ReferenceText() string {
-	return fmt.Sprintf("%v", t.purposes)
+	result := ""
+	for _, s := range t.purposes {
+		result += s
+	}
+	return result
 }
 
 // Amount returns the amount of the transaction.
