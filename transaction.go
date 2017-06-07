@@ -23,23 +23,23 @@ import (
 	"time"
 )
 
-// LedgerTransactionPart describes a part of a ledger transaction
-type LedgerTransactionPart struct {
+// TransactionPart describes a part of a ledger transaction
+type TransactionPart struct {
 	Account  string
 	Value    Decimal
 	Currency string
 }
 
-// LedgerTransaction represents a transaction in a ledger file
-type LedgerTransaction struct {
+// Transaction represents a transaction in a ledger file
+type Transaction struct {
 	Date        time.Time
 	ValutaDate  time.Time
 	Description string
-	Parts       []LedgerTransactionPart
+	Parts       []TransactionPart
 }
 
 // Print prints the ledger transaction to the writer
-func (l *LedgerTransaction) Print(w io.Writer) {
+func (l *Transaction) Print(w io.Writer) {
 	switch {
 	case l.ValutaDate.Year() > 1000 && l.Date.Year() > 1000:
 		fmt.Printf("%d/%02d/%02d=%d/%02d/%02d", l.Date.Year(), l.Date.Month(), l.Date.Day(), l.ValutaDate.Year(), l.ValutaDate.Month(), l.ValutaDate.Day())
