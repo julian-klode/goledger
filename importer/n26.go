@@ -112,7 +112,7 @@ func (t n26Transaction2) Date() time.Time {
 
 // ValutaDate returns the date of the transaction.
 func (t n26Transaction2) ValutaDate() time.Time {
-	return time.Unix(t.d.VisibleTS/1000, 0)
+	return time.Unix(t.d.CreatedTS/1000, 0)
 }
 
 // Currency returns a currency code for the account.
