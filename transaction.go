@@ -41,7 +41,7 @@ type Transaction struct {
 // Print prints the ledger transaction to the writer
 func (l *Transaction) Print(w io.Writer) {
 	switch {
-	case l.ValutaDate.Year() > 1000 && l.Date.Year() > 1000:
+	case l.ValutaDate.Year() > 1000 && l.Date.Year() > 1000 && l.ValutaDate != l.Date:
 		fmt.Printf("%d/%02d/%02d=%d/%02d/%02d", l.Date.Year(), l.Date.Month(), l.Date.Day(), l.ValutaDate.Year(), l.ValutaDate.Month(), l.ValutaDate.Day())
 	case l.Date.Year() > 1000:
 		fmt.Printf("%d/%02d/%02d", l.Date.Year(), l.Date.Month(), l.Date.Day())
