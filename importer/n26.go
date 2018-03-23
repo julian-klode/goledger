@@ -73,6 +73,22 @@ func (t n26Transaction2) ID() string {
 	return t.d.ID
 }
 
+var categories = map[string]Category{
+	"micro-v2-atm":                   CategoryATM,
+	"micro-v2-food-groceries":        CategoryFoodGroceries,
+	"micro-v2-income":                CategoryIncome,
+	"micro-v2-leisure-entertainment": CategoryLeisureEntertainment,
+	"micro-v2-miscellaneous":         CategoryMisc,
+	"micro-v2-savings-investments":   CategorySavingsInvestments,
+	"micro-v2-shopping":              CategoryShopping,
+	"micro-v2-transport-car":         CategoryTransportCar,
+	"micro-v2-bars-restaurants":	  CategoryBarsRestaurants,
+}
+
+func (t n26Transaction2) Category() Category {
+	return categories[t.d.Category]
+}
+
 // LocalAccount returns an ID of the local account.
 func (t n26Transaction2) LocalAccount() string {
 	return t.d.AccountID

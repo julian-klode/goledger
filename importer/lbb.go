@@ -47,6 +47,10 @@ func (t lbbTransaction) ID() string {
 	return hashTransaction(t)
 }
 
+func (t lbbTransaction) Category() Category {
+	return CategoryMisc
+}
+
 // LocalAccount returns an ID of the local account.
 func (t lbbTransaction) LocalAccount() string {
 	return t.CardNumber

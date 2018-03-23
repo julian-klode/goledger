@@ -26,6 +26,23 @@ import (
 	"github.com/julian-klode/goledger"
 )
 
+// Category represents categories of a transaction. Only supported by the
+// N26Account.
+type Category int
+
+// Possible categories
+const (
+	CategoryMisc Category = iota
+	CategoryATM
+	CategoryFoodGroceries
+	CategoryIncome
+	CategoryLeisureEntertainment
+	CategorySavingsInvestments
+	CategoryShopping
+	CategoryTransportCar
+	CategoryBarsRestaurants
+)
+
 // Transaction describes a generic incoming transaction.
 type Transaction interface {
 	// An identifier describing the description, to filter out duplicates.
@@ -33,6 +50,8 @@ type Transaction interface {
 	// If the bank does not provide identifiers, use hashTransaction() when
 	// implementing a new transaction parser.
 	ID() string
+	// Category of the transaction
+	Category() Category
 	// Time when the transaction occured. For the difference between date
 	// and valuta date search the internet, I can't explain it.
 	Date() time.Time

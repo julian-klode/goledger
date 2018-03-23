@@ -44,6 +44,10 @@ func (t hbciTransaction) ID() string {
 	return hashTransaction(t)
 }
 
+func (t hbciTransaction) Category() Category {
+	return CategoryMisc
+}
+
 // LocalAccount returns an ID of the local account.
 func (t hbciTransaction) LocalAccount() string {
 	return t.localAccountNumber
