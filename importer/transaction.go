@@ -34,6 +34,7 @@ type Category int
 const (
 	CategoryMisc Category = iota
 	CategoryATM
+	CategoryBusiness
 	CategoryFoodGroceries
 	CategoryIncome
 	CategoryLeisureEntertainment

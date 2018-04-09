@@ -75,6 +75,7 @@ func (t n26Transaction2) ID() string {
 
 var categories = map[string]Category{
 	"micro-v2-atm":                   CategoryATM,
+	"micro-v2-business":			  CategoryBusiness,
 	"micro-v2-food-groceries":        CategoryFoodGroceries,
 	"micro-v2-income":                CategoryIncome,
 	"micro-v2-leisure-entertainment": CategoryLeisureEntertainment,
