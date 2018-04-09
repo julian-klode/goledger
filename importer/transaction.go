@@ -41,6 +41,7 @@ const (
 	CategorySavingsInvestments
 	CategoryShopping
 	CategoryTransportCar
+	CategoryTravelHolidays
 	CategoryBarsRestaurants
 )
 
