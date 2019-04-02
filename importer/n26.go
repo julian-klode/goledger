@@ -20,6 +20,7 @@ package importer
 import (
 	"encoding/json"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/julian-klode/goledger"
@@ -65,6 +66,7 @@ type n26Transaction struct {
 	TransactionTerminal  string           `json:"transactionTerminal,omitempty"`
 	PartnerBankName      string           `json:"partnerBankName,omitempty"`
 	BankTransferTypeText string           `json:"bankTransferTypeText,omitempty"`
+	PaymentScheme string           `json:"paymentScheme,omitempty"`
 }
 
 type n26Transaction2 struct{ d *n26Transaction }
@@ -115,7 +117,18 @@ func (t n26Transaction2) RemoteName() string {
 
 // ReferenceText returns a description of the transaction.
 func (t n26Transaction2) ReferenceText() string {
-	return t.d.ReferenceText
+	switch {
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount > 0:
+		re := regexp.MustCompile("Von (.*) nach Hauptkonto")
+		matches := re.FindStringSubmatch(t.d.PartnerName)
+		return "space:" + matches[1]
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount < 0:
+		re := regexp.MustCompile("Von Hauptkonto nach (.*)")
+		matches := re.FindStringSubmatch(t.d.PartnerName)
+		return "space:" + matches[1]
+	default:
+		return t.d.ReferenceText
+	}
 }
 
 // Amount returns the amount of the transaction.
