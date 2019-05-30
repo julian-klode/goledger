@@ -30,11 +30,16 @@ type Decimal int
 // UnmarshalJSON reads a JSON number as a decimal value.
 func (d *Decimal) UnmarshalJSON(data []byte) error {
 	var value json.Number
-	var sign = 1
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	sections := strings.SplitN(string(value), ".", 2)
+	return d.UnmarshalString(string(value), ".")
+}
+
+// UnmarshallString parses a string into a number
+func (d *Decimal) UnmarshalString(str string, sep string) error {
+	var sign = 1
+	sections := strings.SplitN(str, sep, 2)
 	if sections[0][0] == '-' {
 		sections[0] = sections[0][1:]
 		sign = -1
