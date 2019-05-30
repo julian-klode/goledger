@@ -66,7 +66,7 @@ type n26Transaction struct {
 	TransactionTerminal  string           `json:"transactionTerminal,omitempty"`
 	PartnerBankName      string           `json:"partnerBankName,omitempty"`
 	BankTransferTypeText string           `json:"bankTransferTypeText,omitempty"`
-	PaymentScheme string           `json:"paymentScheme,omitempty"`
+	PaymentScheme        string           `json:"paymentScheme,omitempty"`
 }
 
 type n26Transaction2 struct{ d *n26Transaction }
@@ -77,7 +77,7 @@ func (t n26Transaction2) ID() string {
 
 var categories = map[string]Category{
 	"micro-v2-atm":                   CategoryATM,
-	"micro-v2-business":			  CategoryBusiness,
+	"micro-v2-business":              CategoryBusiness,
 	"micro-v2-food-groceries":        CategoryFoodGroceries,
 	"micro-v2-income":                CategoryIncome,
 	"micro-v2-leisure-entertainment": CategoryLeisureEntertainment,
@@ -85,8 +85,8 @@ var categories = map[string]Category{
 	"micro-v2-savings-investments":   CategorySavingsInvestments,
 	"micro-v2-shopping":              CategoryShopping,
 	"micro-v2-transport-car":         CategoryTransportCar,
-	"micro-v2-bars-restaurants":	  CategoryBarsRestaurants,
-	"micro-v2-travel-holidays": 	  CategoryTravelHolidays,
+	"micro-v2-bars-restaurants":      CategoryBarsRestaurants,
+	"micro-v2-travel-holidays":       CategoryTravelHolidays,
 }
 
 func (t n26Transaction2) Category() Category {
