@@ -36,7 +36,7 @@ func (d *Decimal) UnmarshalJSON(data []byte) error {
 	return d.UnmarshalString(string(value), ".")
 }
 
-// UnmarshallString parses a string into a number
+// UnmarshalString parses a string into a number
 func (d *Decimal) UnmarshalString(str string, sep string) error {
 	var sign = 1
 	sections := strings.SplitN(str, sep, 2)
