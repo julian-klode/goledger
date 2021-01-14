@@ -100,7 +100,18 @@ func (t n26Transaction2) LocalAccount() string {
 
 // RemoteAccount returns an ID of the remote account (IBAN).
 func (t n26Transaction2) RemoteAccount() string {
-	return t.d.PartnerIban
+	switch {
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount > 0:
+		re := regexp.MustCompile("Von (.*) nach Hauptkonto")
+		matches := re.FindStringSubmatch(t.d.PartnerName)
+		return "space:" + matches[1]
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount < 0:
+		re := regexp.MustCompile("Von Hauptkonto nach (.*)")
+		matches := re.FindStringSubmatch(t.d.PartnerName)
+		return "space:" + matches[1]
+	default:
+		return t.d.PartnerIban
+	}
 }
 
 // RemoteName returns a name of the other account.
@@ -118,11 +129,11 @@ func (t n26Transaction2) RemoteName() string {
 // ReferenceText returns a description of the transaction.
 func (t n26Transaction2) ReferenceText() string {
 	switch {
-	case t.d.PaymentScheme == "SPACES" && t.d.Amount > 0:
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount > 0 && t.d.ReferenceText == "":
 		re := regexp.MustCompile("Von (.*) nach Hauptkonto")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
-	case t.d.PaymentScheme == "SPACES" && t.d.Amount < 0:
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount < 0 && t.d.ReferenceText == "":
 		re := regexp.MustCompile("Von Hauptkonto nach (.*)")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
