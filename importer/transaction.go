@@ -126,7 +126,7 @@ func hashTransaction(t Transaction) string {
 	if err != nil {
 		panic(err)
 	}
-	_, err = hash.Write([]byte(string(t.Amount())))
+	_, err = hash.Write([]byte(fmt.Sprint(t.Amount())))
 	if err != nil {
 		panic(err)
 	}
