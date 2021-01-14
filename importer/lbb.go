@@ -99,9 +99,11 @@ func lbbParseTransaction(record []string, t *lbbTransaction) bool {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[1], err)
 	}
-	t.date, err = time.Parse("02.01.2006", record[2])
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[2], err)
+	if record[2] != "" {
+		t.date, err = time.Parse("02.01.2006", record[2])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[2], err)
+		}
 	}
 	if matched, _ := regexp.MatchString("[+-] .* (4-fache-Punkte-Aktion|AMAZON(.DE)? PUNKTE)", record[3]); matched {
 		var sign rune
