@@ -43,6 +43,7 @@ const (
 	CategoryTransportCar
 	CategoryTravelHolidays
 	CategoryBarsRestaurants
+	CategoryHealthcareDrugstores
 )
 
 // Transaction describes a generic incoming transaction.

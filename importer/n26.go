@@ -87,6 +87,7 @@ var categories = map[string]Category{
 	"micro-v2-transport-car":         CategoryTransportCar,
 	"micro-v2-bars-restaurants":      CategoryBarsRestaurants,
 	"micro-v2-travel-holidays":       CategoryTravelHolidays,
+	"micro-v2-healthcare-drugstores": CategoryHealthcareDrugstores,
 }
 
 func (t n26Transaction2) Category() Category {
