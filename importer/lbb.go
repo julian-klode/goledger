@@ -95,6 +95,9 @@ func lbbParseTransaction(record []string, t *lbbTransaction) bool {
 	var err error
 
 	t.CardNumber = record[0]
+	if t.CardNumber == "" {
+		t.CardNumber = "DECREDITCARD"
+	}
 	t.valutaDate, err = time.Parse("02.01.2006", record[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[1], err)
@@ -105,7 +108,14 @@ func lbbParseTransaction(record []string, t *lbbTransaction) bool {
 			fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[2], err)
 		}
 	}
-	if matched, _ := regexp.MatchString("[+-] .* (4-fache-Punkte-Aktion|AMAZON(.DE)? PUNKTE)", record[3]); matched {
+	if len(record) > 8 {
+		t.currency = "EUR"
+		t.Merchant = record[3]
+
+		(&t.amount).UnmarshalJSON([]byte(strings.Replace(record[8], ",", ".", 1)))
+		t.amount = -t.amount
+		// FIXME: We should implement points here
+	} else if matched, _ := regexp.MatchString("[+-] .* (4-fache-Punkte-Aktion|AMAZON(.DE)? PUNKTE)", record[3]); matched {
 		var sign rune
 		var value int
 		// New format
@@ -145,19 +155,23 @@ func LBBParseFile(path string) ([]Transaction, error) {
 	}()
 
 	var transactions []Transaction
-
+	var newstyle = false
 	r := csv.NewReader(fr)
 	r.Comma = ';'
 	for {
 		record, err := r.Read()
+		if len(record) > 8 {
+			newstyle = true
+		}
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("meow", err)
 		}
 
-		if !strings.ContainsRune("0123456789", rune(record[0][0])) {
+		_, err = time.Parse("02.01.2006", record[1])
+		if err != nil {
 			continue
 		}
 
@@ -166,6 +180,12 @@ func LBBParseFile(path string) ([]Transaction, error) {
 			continue
 		}
 		transactions = append(transactions, &t)
+
+	}
+	if newstyle {
+		for i, j := 0, len(transactions)-1; i < j; i, j = i+1, j-1 {
+			transactions[i], transactions[j] = transactions[j], transactions[i]
+		}
 
 	}
 	return transactions, nil
