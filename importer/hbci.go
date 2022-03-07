@@ -204,6 +204,12 @@ func HBCIParseFile(path string, parseNoted bool) ([]Transaction, error) {
 				fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[columns["date"]], err)
 			}
 		}
+		if record[columns["valutaDate"]] != "" {
+			t.valutaDate, err = time.Parse("2006/01/02", record[columns["valutaDate"]])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[columns["valutaDate"]], err)
+			}
+		}
 		transactions = append(transactions, &t)
 
 	}
