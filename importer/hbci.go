@@ -24,6 +24,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/julian-klode/goledger"
@@ -147,9 +148,30 @@ func HBCIParseFile(path string) ([]Transaction, error) {
 		}
 		var t hbciTransaction
 
-		t.localAccountNumber = record[columns["localAccountNumber"]]
-		t.remoteAccountNumber = record[columns["remoteAccountNumber"]]
-		(&t.valueValue).UnmarshalJSON([]byte(record[columns["value_value"]]))
+		t.localAccountNumber = record[columns["localIban"]]
+		t.remoteAccountNumber = record[columns["remoteIban"]]
+
+		if t.remoteAccountNumber == "" {
+			t.remoteAccountNumber = record[columns["remoteAccountNumber"]]
+		}
+		if t.localAccountNumber == "" {
+			t.localAccountNumber = record[columns["localAccountNumber"]]
+		}
+
+		if strings.Contains(record[columns["value_value"]], "/") {
+			parts := strings.Split(record[columns["value_value"]], "/")
+			a, err := strconv.Atoi(parts[0])
+			if err != nil {
+				panic(err)
+			}
+			b, err := strconv.Atoi(parts[1])
+			if err != nil {
+				panic(err)
+			}
+			t.valueValue = goledger.Decimal(100 * a / b) // FIXME: Internal knowledge
+		} else {
+			(&t.valueValue).UnmarshalJSON([]byte(record[columns["value_value"]]))
+		}
 		t.valueCurrency = record[columns["value_currency"]]
 		if t.valueCurrency == "" {
 			t.valueCurrency = "EUR"
