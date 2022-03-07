@@ -198,6 +198,12 @@ func HBCIParseFile(path string, parseNoted bool) ([]Transaction, error) {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[columns["date"]], err)
 		}
+		if record[columns["transactionText"]] == "KARTENZAHLUNG" && len(t.purposes[0]) > 10 && t.purposes[0][10] == 'T' {
+			newDate, err := time.Parse("2006-01-02", t.purposes[0][:10])
+			if err == nil {
+				t.date = newDate
+			}
+		}
 		if record[columns["valutadate"]] != "" {
 			t.valutaDate, err = time.Parse("2006/01/02", record[columns["valutadate"]])
 			if err != nil {
