@@ -182,6 +182,13 @@ func HBCIParseFile(path string) ([]Transaction, error) {
 				t.remoteName = append(t.remoteName, record[columns["remoteName"+strconv.Itoa(i)]])
 			}
 		}
+
+		if record[columns["ultimateDebtor"]] != "" {
+			t.remoteName = append([]string{}, record[columns["ultimateDebtor"]])
+		}
+		if record[columns["ultimateCreditor"]] != "" {
+			t.remoteName = append([]string{}, record[columns["ultimateCreditor"]])
+		}
 		t.purposes = append(t.purposes, record[columns["purpose"]])
 		for i := 1; columns["purpose"+strconv.Itoa(i)] != 0; i++ {
 			if record[columns["purpose"+strconv.Itoa(i)]] != "" {
