@@ -151,6 +151,9 @@ func HBCIParseFile(path string) ([]Transaction, error) {
 		t.remoteAccountNumber = record[columns["remoteAccountNumber"]]
 		(&t.valueValue).UnmarshalJSON([]byte(record[columns["value_value"]]))
 		t.valueCurrency = record[columns["value_currency"]]
+		if t.valueCurrency == "" {
+			t.valueCurrency = "EUR"
+		}
 		t.remoteName = append(t.remoteName, record[columns["remoteName"]])
 		for i := 1; columns["remoteName"+strconv.Itoa(i)] != 0; i++ {
 			if record[columns["remoteName"+strconv.Itoa(i)]] != "" {
@@ -168,9 +171,11 @@ func HBCIParseFile(path string) ([]Transaction, error) {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[columns["date"]], err)
 		}
-		t.valutaDate, err = time.Parse("2006/01/02", record[columns["valutadate"]])
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[columns["date"]], err)
+		if record[columns["valutadate"]] != "" {
+			t.valutaDate, err = time.Parse("2006/01/02", record[columns["valutadate"]])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Could not parse %s: %s\n", record[columns["date"]], err)
+			}
 		}
 		transactions = append(transactions, &t)
 
