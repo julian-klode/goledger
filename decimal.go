@@ -27,6 +27,11 @@ import (
 // Decimal is a decimal type for amounts of money (2 digits after separator).
 type Decimal int
 
+// NewDecimalFromFraction returns a decimal value corresponding to a / b
+func NewDecimalFromFraction(a, b int) Decimal {
+	return Decimal(100 * a / b)
+}
+
 // UnmarshalJSON reads a JSON number as a decimal value.
 func (d *Decimal) UnmarshalJSON(data []byte) error {
 	var value json.Number

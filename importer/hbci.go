@@ -166,7 +166,7 @@ func HBCIParseFile(path string, parseNoted bool) ([]Transaction, error) {
 			if err != nil {
 				panic(err)
 			}
-			t.valueValue = goledger.Decimal(100 * a / b) // FIXME: Internal knowledge
+			t.valueValue = goledger.NewDecimalFromFraction(a, b)
 		} else {
 			(&t.valueValue).UnmarshalJSON([]byte(record[columns["value_value"]]))
 		}
