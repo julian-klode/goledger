@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/julian-klode/goledger"
+	"github.com/shopspring/decimal"
 )
 
 // Category represents categories of a transaction. Only supported by the
@@ -86,7 +86,7 @@ type Transaction interface {
 	// currency code, like EUR.
 	//
 	// The LBB provider understands a code 'A' which means Amazon credits.
-	Amount() goledger.Decimal
+	Amount() decimal.Decimal
 	Currency() string
 }
 

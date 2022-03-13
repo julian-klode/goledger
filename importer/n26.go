@@ -23,50 +23,50 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/julian-klode/goledger"
+	"github.com/shopspring/decimal"
 )
 
 // n26Transaction is a transaction in an N26 account.
 type n26Transaction struct {
-	ID                   string           `json:"id"`
-	UserID               string           `json:"userId"`
-	Type                 string           `json:"type"`
-	Amount               goledger.Decimal `json:"amount"`
-	CurrencyCode         string           `json:"currencyCode"`
-	MerchantCity         string           `json:"merchantCity,omitempty"`
-	VisibleTS            int64            `json:"visibleTS"`
-	Mcc                  int              `json:"mcc,omitempty"`
-	MccGroup             int              `json:"mccGroup,omitempty"`
-	MerchantName         string           `json:"merchantName,omitempty"`
-	Recurring            bool             `json:"recurring"`
-	AccountID            string           `json:"accountId"`
-	Category             string           `json:"category"`
-	CardID               string           `json:"cardId,omitempty"`
-	UserCertified        int64            `json:"userCertified,omitempty"`
-	Pending              bool             `json:"pending"`
-	TransactionNature    string           `json:"transactionNature"`
-	CreatedTS            int64            `json:"createdTS"`
-	MerchantCountry      int              `json:"merchantCountry,omitempty"`
-	SmartLinkID          string           `json:"smartLinkId"`
-	LinkID               string           `json:"linkId"`
-	Confirmed            int64            `json:"confirmed,omitempty"`
-	PartnerBic           string           `json:"partnerBic,omitempty"`
-	PartnerAccountIsSepa bool             `json:"partnerAccountIsSepa,omitempty"`
-	PartnerName          string           `json:"partnerName,omitempty"`
-	PartnerIban          string           `json:"partnerIban,omitempty"`
-	ReferenceText        string           `json:"referenceText,omitempty"`
-	UserAccepted         int64            `json:"userAccepted,omitempty"`
-	PartnerBcn           string           `json:"partnerBcn,omitempty"`
-	PartnerAccountBan    string           `json:"partnerAccountBan,omitempty"`
-	SmartContactID       string           `json:"smartContactId,omitempty"`
-	OriginalAmount       goledger.Decimal `json:"originalAmount,omitempty"`
-	OriginalCurrency     string           `json:"originalCurrency,omitempty"`
-	ExchangeRate         float64          `json:"exchangeRate,omitempty"`
-	MerchantID           string           `json:"merchantId,omitempty"`
-	TransactionTerminal  string           `json:"transactionTerminal,omitempty"`
-	PartnerBankName      string           `json:"partnerBankName,omitempty"`
-	BankTransferTypeText string           `json:"bankTransferTypeText,omitempty"`
-	PaymentScheme        string           `json:"paymentScheme,omitempty"`
+	ID                   string          `json:"id"`
+	UserID               string          `json:"userId"`
+	Type                 string          `json:"type"`
+	Amount               decimal.Decimal `json:"amount"`
+	CurrencyCode         string          `json:"currencyCode"`
+	MerchantCity         string          `json:"merchantCity,omitempty"`
+	VisibleTS            int64           `json:"visibleTS"`
+	Mcc                  int             `json:"mcc,omitempty"`
+	MccGroup             int             `json:"mccGroup,omitempty"`
+	MerchantName         string          `json:"merchantName,omitempty"`
+	Recurring            bool            `json:"recurring"`
+	AccountID            string          `json:"accountId"`
+	Category             string          `json:"category"`
+	CardID               string          `json:"cardId,omitempty"`
+	UserCertified        int64           `json:"userCertified,omitempty"`
+	Pending              bool            `json:"pending"`
+	TransactionNature    string          `json:"transactionNature"`
+	CreatedTS            int64           `json:"createdTS"`
+	MerchantCountry      int             `json:"merchantCountry,omitempty"`
+	SmartLinkID          string          `json:"smartLinkId"`
+	LinkID               string          `json:"linkId"`
+	Confirmed            int64           `json:"confirmed,omitempty"`
+	PartnerBic           string          `json:"partnerBic,omitempty"`
+	PartnerAccountIsSepa bool            `json:"partnerAccountIsSepa,omitempty"`
+	PartnerName          string          `json:"partnerName,omitempty"`
+	PartnerIban          string          `json:"partnerIban,omitempty"`
+	ReferenceText        string          `json:"referenceText,omitempty"`
+	UserAccepted         int64           `json:"userAccepted,omitempty"`
+	PartnerBcn           string          `json:"partnerBcn,omitempty"`
+	PartnerAccountBan    string          `json:"partnerAccountBan,omitempty"`
+	SmartContactID       string          `json:"smartContactId,omitempty"`
+	OriginalAmount       decimal.Decimal `json:"originalAmount,omitempty"`
+	OriginalCurrency     string          `json:"originalCurrency,omitempty"`
+	ExchangeRate         float64         `json:"exchangeRate,omitempty"`
+	MerchantID           string          `json:"merchantId,omitempty"`
+	TransactionTerminal  string          `json:"transactionTerminal,omitempty"`
+	PartnerBankName      string          `json:"partnerBankName,omitempty"`
+	BankTransferTypeText string          `json:"bankTransferTypeText,omitempty"`
+	PaymentScheme        string          `json:"paymentScheme,omitempty"`
 }
 
 type n26Transaction2 struct{ d *n26Transaction }
@@ -102,11 +102,11 @@ func (t n26Transaction2) LocalAccount() string {
 // RemoteAccount returns an ID of the remote account (IBAN).
 func (t n26Transaction2) RemoteAccount() string {
 	switch {
-	case t.d.PaymentScheme == "SPACES" && t.d.Amount > 0:
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount.IsPositive():
 		re := regexp.MustCompile("Von (.*) nach Hauptkonto")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
-	case t.d.PaymentScheme == "SPACES" && t.d.Amount < 0:
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount.IsNegative():
 		re := regexp.MustCompile("Von Hauptkonto nach (.*)")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
@@ -130,11 +130,11 @@ func (t n26Transaction2) RemoteName() string {
 // ReferenceText returns a description of the transaction.
 func (t n26Transaction2) ReferenceText() string {
 	switch {
-	case t.d.PaymentScheme == "SPACES" && t.d.Amount > 0 && t.d.ReferenceText == "":
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount.IsPositive() && t.d.ReferenceText == "":
 		re := regexp.MustCompile("Von (.*) nach Hauptkonto")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
-	case t.d.PaymentScheme == "SPACES" && t.d.Amount < 0 && t.d.ReferenceText == "":
+	case t.d.PaymentScheme == "SPACES" && t.d.Amount.IsNegative() && t.d.ReferenceText == "":
 		re := regexp.MustCompile("Von Hauptkonto nach (.*)")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
@@ -144,7 +144,7 @@ func (t n26Transaction2) ReferenceText() string {
 }
 
 // Amount returns the amount of the transaction.
-func (t n26Transaction2) Amount() goledger.Decimal {
+func (t n26Transaction2) Amount() decimal.Decimal {
 	return t.d.Amount
 }
 

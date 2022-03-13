@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/julian-klode/goledger"
+	"github.com/shopspring/decimal"
 )
 
 // lbbTransaction describes transactions as contained in a CSV file exported
@@ -37,9 +37,9 @@ type lbbTransaction struct {
 	valutaDate     time.Time
 	date           time.Time
 	Merchant       string
-	OriginalAmount goledger.Decimal
+	OriginalAmount decimal.Decimal
 	ExchangeRate   float64
-	amount         goledger.Decimal
+	amount         decimal.Decimal
 	currency       string
 }
 
@@ -72,7 +72,7 @@ func (t lbbTransaction) ReferenceText() string {
 }
 
 // Amount returns the amount of the transaction.
-func (t lbbTransaction) Amount() goledger.Decimal {
+func (t lbbTransaction) Amount() decimal.Decimal {
 	return t.amount
 }
 
@@ -113,11 +113,11 @@ func lbbParseTransaction(record []string, t *lbbTransaction) bool {
 		t.Merchant = record[3]
 
 		(&t.amount).UnmarshalJSON([]byte(strings.Replace(record[8], ",", ".", 1)))
-		t.amount = -t.amount
+		t.amount = t.amount.Neg()
 		// FIXME: We should implement points here
 	} else if matched, _ := regexp.MatchString("[+-] .* (4-fache-Punkte-Aktion|AMAZON(.DE)? PUNKTE)", record[3]); matched {
 		var sign rune
-		var value int
+		var value int64
 		// New format
 		n, err := fmt.Sscanf(strings.TrimSpace(record[3]), "%c %d.0 AMAZON PUNKTE", &sign, &value)
 		if n != 2 {
@@ -128,9 +128,9 @@ func lbbParseTransaction(record []string, t *lbbTransaction) bool {
 				return false
 			}
 		}
-		t.amount = goledger.Decimal(value * 100)
+		t.amount = decimal.New(value, 0)
 		if sign == '-' {
-			t.amount = -t.amount
+			t.amount = t.amount.Neg()
 		}
 		t.currency = "A"
 		t.Merchant = "AMAZON PUNKTE"

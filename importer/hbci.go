@@ -27,13 +27,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/julian-klode/goledger"
+	"github.com/shopspring/decimal"
 )
 
 type hbciTransaction struct {
 	localAccountNumber  string
 	remoteAccountNumber string
-	valueValue          goledger.Decimal
+	valueValue          decimal.Decimal
 	valueCurrency       string
 	remoteName          []string
 	purposes            []string
@@ -78,7 +78,7 @@ func (t hbciTransaction) ReferenceText() string {
 }
 
 // Amount returns the amount of the transaction.
-func (t hbciTransaction) Amount() goledger.Decimal {
+func (t hbciTransaction) Amount() decimal.Decimal {
 	return t.valueValue
 }
 
@@ -166,7 +166,7 @@ func HBCIParseFile(path string, parseNoted bool) ([]Transaction, error) {
 			if err != nil {
 				panic(err)
 			}
-			t.valueValue = goledger.NewDecimalFromFraction(a, b)
+			t.valueValue = decimal.New(int64(100)*int64(a)/int64(b), -2)
 		} else {
 			(&t.valueValue).UnmarshalJSON([]byte(record[columns["value_value"]]))
 		}

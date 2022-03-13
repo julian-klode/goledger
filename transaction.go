@@ -21,12 +21,14 @@ import (
 	"fmt"
 	"io"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 // TransactionPart describes a part of a ledger transaction
 type TransactionPart struct {
 	Account  string
-	Value    Decimal
+	Value    decimal.Decimal
 	Currency string
 }
 
