@@ -20,6 +20,7 @@ package goledger
 import (
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -27,9 +28,11 @@ import (
 
 // TransactionPart describes a part of a ledger transaction
 type TransactionPart struct {
-	Account  string
-	Value    decimal.Decimal
-	Currency string
+	Account    string
+	Value      decimal.Decimal
+	Currency   string
+	AtValue    decimal.Decimal
+	AtCurrency string
 }
 
 // Transaction represents a transaction in a ledger file
@@ -38,6 +41,16 @@ type Transaction struct {
 	ValutaDate  time.Time
 	Description string
 	Parts       []TransactionPart
+}
+
+func renderDecimal(d decimal.Decimal) string {
+	value := d.String()
+	if !strings.Contains(value, ".") {
+		value += ".00"
+	} else if len(value) >= 2 && value[len(value)-2] == '.' {
+		value += "0"
+	}
+	return value
 }
 
 // Print prints the ledger transaction to the writer
@@ -54,7 +67,11 @@ func (l *Transaction) Print(w io.Writer) {
 	}
 	fmt.Printf(" %s\n", l.Description)
 	for _, p := range l.Parts {
-		fmt.Printf("    %s  %s %s\n", p.Account, p.Value, p.Currency)
+		if !p.AtValue.IsZero() {
+			fmt.Printf("    %s  %v %s @ %v %s\n", p.Account, renderDecimal(p.Value), p.Currency, renderDecimal(p.AtValue), p.AtCurrency)
+		} else {
+			fmt.Printf("    %s  %v %s\n", p.Account, renderDecimal(p.Value), p.Currency)
+		}
 	}
 	fmt.Println()
 }
