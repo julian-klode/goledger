@@ -90,6 +90,16 @@ type Transaction interface {
 	Currency() string
 }
 
+// ForeignTransaction adds a foreign amount and currency.
+type ForeignTransaction interface {
+	Transaction
+
+	// The amount and the currency of the transaction that is not in the
+	// local account currency.
+	ForeignAmount() decimal.Decimal
+	ForeignCurrency() string
+}
+
 // MultilineTransaction is a transaction where names and purposes can have
 // multiple lines.
 type MultilineTransaction interface {

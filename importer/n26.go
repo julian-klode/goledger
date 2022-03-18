@@ -61,7 +61,7 @@ type n26Transaction struct {
 	SmartContactID       string          `json:"smartContactId,omitempty"`
 	OriginalAmount       decimal.Decimal `json:"originalAmount,omitempty"`
 	OriginalCurrency     string          `json:"originalCurrency,omitempty"`
-	ExchangeRate         float64         `json:"exchangeRate,omitempty"`
+	ExchangeRate         decimal.Decimal `json:"exchangeRate,omitempty"`
 	MerchantID           string          `json:"merchantId,omitempty"`
 	TransactionTerminal  string          `json:"transactionTerminal,omitempty"`
 	PartnerBankName      string          `json:"partnerBankName,omitempty"`
@@ -161,6 +161,16 @@ func (t n26Transaction2) ValutaDate() time.Time {
 // Currency returns a currency code for the account.
 func (t n26Transaction2) Currency() string {
 	return t.d.CurrencyCode
+}
+
+// ForeignAmount returns the original amount of the transaction.
+func (t n26Transaction2) ForeignAmount() decimal.Decimal {
+	return t.d.OriginalAmount
+}
+
+// Currency returns a currency code for the account.
+func (t n26Transaction2) ForeignCurrency() string {
+	return t.d.OriginalCurrency
 }
 
 // N26ParseFile parses a N26 JSON file into a slice of transactions.
