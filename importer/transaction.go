@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package importer
 
 import (
-	"crypto/sha1"
+	"crypto/sha256"
 	"fmt"
 	"time"
 
@@ -102,7 +102,7 @@ type MultilineTransaction interface {
 // hashTransaction is a base implementation for Transaction.ID().
 // It just hashes all values using SHA1.
 func hashTransaction(t Transaction) string {
-	hash := sha1.New()
+	hash := sha256.New()
 	_, err := hash.Write([]byte(t.Date().String()))
 	if err != nil {
 		panic(err)
