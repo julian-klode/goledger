@@ -26,8 +26,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// TransactionPart describes a part of a ledger transaction
-type TransactionPart struct {
+// Posting describes a part of a ledger transaction
+type Posting struct {
 	Account    string
 	Value      decimal.Decimal
 	Currency   string
@@ -40,7 +40,7 @@ type Transaction struct {
 	Date        time.Time
 	ValutaDate  time.Time
 	Description string
-	Parts       []TransactionPart
+	Postings    []Posting
 }
 
 func renderDecimal(d decimal.Decimal) string {
@@ -66,7 +66,7 @@ func (l *Transaction) Print(w io.Writer) {
 		fmt.Printf("1970/01/01")
 	}
 	fmt.Printf(" %s\n", l.Description)
-	for _, p := range l.Parts {
+	for _, p := range l.Postings {
 		if !p.AtValue.IsZero() {
 			fmt.Printf("    %s  %v %s @ %v %s\n", p.Account, renderDecimal(p.Value), p.Currency, renderDecimal(p.AtValue), p.AtCurrency)
 		} else {
