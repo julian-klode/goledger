@@ -40,11 +40,15 @@ type hbciTransaction struct {
 	date                time.Time
 	valutaDate          time.Time
 	fiID                string
+	bankReference       string
 }
 
 func (t hbciTransaction) ID() string {
 	if t.fiID != "" {
 		return t.fiID
+	}
+	if t.bankReference != "" {
+		return t.bankReference
 	}
 	return hashTransaction(t)
 }
@@ -151,6 +155,7 @@ func HBCIParseFile(path string, parseNoted bool) ([]Transaction, error) {
 		var t hbciTransaction
 
 		t.fiID = record[columns["fiId"]]
+		t.bankReference = record[columns["bankReference"]]
 		t.localAccountNumber = record[columns["localIban"]]
 		t.remoteAccountNumber = record[columns["remoteIban"]]
 
