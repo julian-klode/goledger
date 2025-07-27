@@ -67,6 +67,10 @@ type n26Transaction struct {
 	PartnerBankName      string          `json:"partnerBankName,omitempty"`
 	BankTransferTypeText string          `json:"bankTransferTypeText,omitempty"`
 	PaymentScheme        string          `json:"paymentScheme,omitempty"`
+	// Search API
+	Title     string `json:"title"`
+	Timestamp int64  `json:"timestamp"`
+	Currency  string `json:"currency"`
 }
 
 type n26Transaction2 struct{ d *n26Transaction }
@@ -122,6 +126,8 @@ func (t n26Transaction2) RemoteName() string {
 		return t.d.PartnerName
 	case t.d.MerchantName != "":
 		return t.d.MerchantName
+	case t.d.Title != "":
+		return t.d.Title
 	default:
 		return ""
 	}
@@ -150,17 +156,32 @@ func (t n26Transaction2) Amount() decimal.Decimal {
 
 // Date returns the date of the transaction.
 func (t n26Transaction2) Date() time.Time {
-	return time.Unix(t.d.VisibleTS/1000, 0)
+	switch {
+	case t.d.VisibleTS != 0:
+		return time.Unix(t.d.VisibleTS/1000, 0)
+	default:
+		return time.Unix(t.d.Timestamp/1000, 0)
+	}
 }
 
 // ValutaDate returns the date of the transaction.
 func (t n26Transaction2) ValutaDate() time.Time {
-	return time.Unix(t.d.CreatedTS/1000, 0)
+	switch {
+	case t.d.CreatedTS != 0:
+		return time.Unix(t.d.CreatedTS/1000, 0)
+	default:
+		return time.Unix(t.d.Timestamp/1000, 0)
+	}
 }
 
 // Currency returns a currency code for the account.
 func (t n26Transaction2) Currency() string {
-	return t.d.CurrencyCode
+	switch {
+	case t.d.CurrencyCode != "":
+		return t.d.CurrencyCode
+	default:
+		return t.d.Currency
+	}
 }
 
 // ForeignAmount returns the original amount of the transaction.
