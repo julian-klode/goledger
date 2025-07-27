@@ -68,9 +68,10 @@ type n26Transaction struct {
 	BankTransferTypeText string          `json:"bankTransferTypeText,omitempty"`
 	PaymentScheme        string          `json:"paymentScheme,omitempty"`
 	// Search API
-	Title     string `json:"title"`
-	Timestamp int64  `json:"timestamp"`
-	Currency  string `json:"currency"`
+	Title       string `json:"title"`
+	Timestamp   int64  `json:"timestamp"`
+	Currency    string `json:"currency"`
+	AmountStyle string `json:"amountStyle"`
 }
 
 type n26Transaction2 struct{ d *n26Transaction }
@@ -144,14 +145,21 @@ func (t n26Transaction2) ReferenceText() string {
 		re := regexp.MustCompile("Von Hauptkonto nach (.*)")
 		matches := re.FindStringSubmatch(t.d.PartnerName)
 		return "space:" + matches[1]
-	default:
+	case t.d.ReferenceText != "":
 		return t.d.ReferenceText
+	default:
+		return ""
 	}
 }
 
 // Amount returns the amount of the transaction.
 func (t n26Transaction2) Amount() decimal.Decimal {
-	return t.d.Amount
+	switch {
+	case t.d.AmountStyle == "STRIKETHROUGH":
+		return decimal.Zero
+	default:
+		return t.d.Amount
+	}
 }
 
 // Date returns the date of the transaction.
